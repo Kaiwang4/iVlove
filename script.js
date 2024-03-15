@@ -10,8 +10,8 @@ $(function () {
         top: 20,
         bottom: 20,
         left: 20,
-        right: 30
-    },
+        right: 30,
+      },
       title: {
         text: "Sensor Data",
         font: {
@@ -34,8 +34,8 @@ $(function () {
       ],
       valueAxis: {
         grid: {
-          visible: false
-        }
+          visible: false,
+        },
       },
       legend: {
         position: "inside",
@@ -45,12 +45,12 @@ $(function () {
       },
       crosshair: {
         enabled: true,
-          dashStyle: 'dot',
-          color: 'gray',
-          width: 2,
-          label: {
-            visible: false,
-          }  
+        dashStyle: "dot",
+        color: "gray",
+        width: 2,
+        label: {
+          visible: false,
+        },
       },
       tooltip: {
         enabled: true,
@@ -60,12 +60,18 @@ $(function () {
         },
         customizeTooltip: function (arg) {
           var points = arg.points,
-              items = [];
-              
+            items = [];
+
           points.forEach(function (point) {
-            items.push('<span style="color:' + point.point.getColor() + '">&#9679;</span>' + ' Y ' + point.valueText);
+            items.push(
+              '<span style="color:' +
+                point.point.getColor() +
+                '">&#9679;</span>' +
+                " Y " +
+                point.valueText
+            );
           });
-    
+
           return {
             html: items.join("<br/>"),
             color: "#414140",
@@ -123,15 +129,15 @@ $(function () {
     grouping: {
       autoExpandAll: false,
     },
-    showColumnLines:false,
+    showColumnLines: false,
     showRowLines: true,
     headerFilter: { visible: true },
     rowAlternationEnabled: true,
-  rowAlternationEnabled: true,
+    rowAlternationEnabled: true,
     series: {
       argumentField: "name",
       valueField: "population",
-    },   
+    },
     columns: [
       { dataField: "name", allowHeaderFiltering: false, width: 140 },
       {
@@ -147,7 +153,7 @@ $(function () {
       {
         dataField: "capital",
         allowHeaderFiltering: false,
-        width: 140
+        width: 140,
       },
       {
         dataField: "area",
@@ -209,9 +215,8 @@ $(function () {
       }
     },
     selection: {
-      mode: "single", 
+      mode: "single",
     },
-    
   });
 
   $("#bar-chart").dxChart({
@@ -225,8 +230,8 @@ $(function () {
       top: 20,
       bottom: 5,
       left: 20,
-      right: 30
-  },
+      right: 30,
+    },
     series: [
       {
         valueField: "populationYoung",

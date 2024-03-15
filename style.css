@@ -1,5 +1,5 @@
 body {
-  background-color: #EFEFEF;
+  background-color: #efefef;
   display: flex;
   flex-direction: row;
   gap: 10px;
@@ -21,7 +21,7 @@ body {
   transform: translate(20px, 20px);
 }
 
-#chart .dxc-legend{
+#chart .dxc-legend {
   transform: translate(-30px, -85px);
 }
 
@@ -31,8 +31,7 @@ body {
   font-weight: 600;
   text-align: left;
   padding: 15px 0 15px 20px;
-  border-bottom: 1px solid #E5E5E5;
-
+  border-bottom: 1px solid #e5e5e5;
 }
 
 #datagrid {
@@ -40,7 +39,7 @@ body {
 }
 
 #datagrid .dx-datagrid-total-footer {
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
   width: 85%;
   height: 30px;
   margin-left: 45px;
@@ -74,6 +73,6 @@ body {
   transform: translate(20px, 20px);
 }
 
-#bar-chart .dxc-legend{
+#bar-chart .dxc-legend {
   transform: translate(-25px, -65px);
 }
