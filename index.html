@@ -3,7 +3,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>iVolve Front End Task Daniel Wang</title>
-    <link href="./style.css" />
+    <link rel="stylesheet" href="./style.css" />
     <script
       type="text/javascript"
       src="https://code.jquery.com/jquery-3.5.1.min.js"
@@ -19,14 +19,20 @@
     <script type="text/javascript" src="./script.js"></script>
   </head>
   <body>
-    <div class="dx-viewport demo-container">
-      <div id="chart"></div>
+    <div class="charts-left">
+      <div class="dx-viewport demo-container">
+        <div id="chart"></div>
+      </div>
+      <div class="dx-viewport demo-container">
+        <div id="bar-chart"></div>
+      </div>
     </div>
-    <div class="dx-viewport demo-container">
-      <div id="bar-chart"></div>
-    </div>
-    <div class="dx-viewport demo-container">
-      <div id="datagrid"></div>
-    </div>
+<div class="charts-right">
+  <div id="gridTitle">City Population</div>
+  <div class="dx-viewport demo-container">
+    <div id="datagrid"></div>
+  </div>
+</div>
+
   </body>
 </html>

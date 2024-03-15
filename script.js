@@ -3,16 +3,75 @@ $(function () {
     .dxChart({
       palette: "Harmony Light",
       dataSource: zoomingData,
+      size: {
+        height: 400,
+      },
+      margin: {
+        top: 20,
+        bottom: 20,
+        left: 20,
+        right: 30
+    },
+      title: {
+        text: "Sensor Data",
+        font: {
+          size: 20,
+          weight: 600,
+        },
+        horizontalAlignment: "left",
+      },
       series: [
         {
           argumentField: "arg",
           valueField: "y1",
+          name: "Item",
         },
         {
           argumentField: "arg",
           valueField: "y2",
+          name: "Item1",
         },
       ],
+      valueAxis: {
+        grid: {
+          visible: false
+        }
+      },
+      legend: {
+        position: "inside",
+        verticalAlignment: "top",
+        horizontalAlignment: "right",
+        columnCount: 2,
+      },
+      crosshair: {
+        enabled: true,
+          dashStyle: 'dot',
+          color: 'gray',
+          width: 2,
+          label: {
+            visible: false,
+          }  
+      },
+      tooltip: {
+        enabled: true,
+        shared: true,
+        font: {
+          color: "white",
+        },
+        customizeTooltip: function (arg) {
+          var points = arg.points,
+              items = [];
+              
+          points.forEach(function (point) {
+            items.push('<span style="color:' + point.point.getColor() + '">&#9679;</span>' + ' Y ' + point.valueText);
+          });
+    
+          return {
+            html: items.join("<br/>"),
+            color: "#414140",
+          };
+        },
+      },
       argumentAxis: {
         visualRange: {
           startValue: 300,
@@ -22,31 +81,220 @@ $(function () {
       scrollBar: {
         visible: true,
       },
-      legend: {
-        visible: false,
+      zoomAndPan: {
+        argumentAxis: "both",
+        valueAxis: "both",
+        dragToZoom: true,
+        allowMouseWheel: true,
+      },
+      export: {
+        enabled: true,
+        formats: ["PNG", "JPEG"],
       },
     })
     .dxChart("instance");
 
+  var classifiedStates = states.reduce(function (acc, item) {
+    var targetState = acc.find((state) => state.name === item.name);
+    if (!targetState) {
+      targetState = {
+        name: item.name,
+        populationElder: 0,
+        populationYoung: 0,
+        area: item.area,
+        region: item.region,
+      };
+      acc.push(targetState);
+    }
+    if (item.older === "Yes") {
+      targetState.populationElder += item.population;
+    } else {
+      targetState.populationYoung += item.population;
+    }
+    return acc;
+  }, []);
+
+  var selectedStateData = null;
+
   $("#datagrid").dxDataGrid({
     palette: "bright",
     dataSource: states,
-    title: "Top 10 Most Populated States in US",
+    groupPanel: { visible: false },
+    grouping: {
+      autoExpandAll: false,
+    },
+    showColumnLines:false,
+    showRowLines: true,
+    headerFilter: { visible: true },
+    rowAlternationEnabled: true,
+  rowAlternationEnabled: true,
     series: {
       argumentField: "name",
       valueField: "population",
+    },   
+    columns: [
+      { dataField: "name", allowHeaderFiltering: false, width: 140 },
+      {
+        dataField: "population",
+        allowHeaderFiltering: false,
+        width: 100,
+        dataType: "number",
+        caption: "Population",
+        format: function (value) {
+          return value.toFixed(2);
+        },
+      },
+      {
+        dataField: "capital",
+        allowHeaderFiltering: false,
+        width: 140
+      },
+      {
+        dataField: "area",
+        allowHeaderFiltering: false,
+        caption: "Area (km²)",
+        dataType: "number",
+      },
+      {
+        caption: "Region",
+        dataField: "region",
+        allowHeaderFiltering: false,
+        showWhenGrouped: false,
+        headerFilter: {
+          visible: true,
+        },
+        groupCellTemplate: function (container, options) {
+          container.text(options.text.replace("Region: ", ""));
+        },
+      },
+      {
+        dataField: "older",
+        allowHeaderFiltering: false,
+      },
+    ],
+    summary: {
+      totalItems: [
+        {
+          column: "population",
+          summaryType: "sum",
+          customizeText: function (data) {
+            return "Sum: " + data.value.toLocaleString();
+          },
+        },
+      ],
     },
+    onInitialized: function (e) {
+      e.component.columnOption("region", "groupIndex", 0);
+    },
+    onRowClick: function (e) {
+      selectedStateData = e.data;
+      $("#bar-chart")
+        .dxChart("instance")
+        .option("dataSource", classifiedStates);
+    },
+    onSelectionChanged: function (selectedItems) {
+      var data = selectedItems.selectedRowsData[0];
+      if (data) {
+        var chartInstance = $("#bar-chart").dxChart("instance");
+        chartInstance.option("dataSource", classifiedStates);
+        chartInstance.clearSelection();
+        chartInstance.option("commonSeriesSettings.point", {
+          color: function (pointInfo) {
+            if (pointInfo.data.name === data.name) {
+              return "gray";
+            }
+            return;
+          },
+        });
+      }
+    },
+    selection: {
+      mode: "single", 
+    },
+    
   });
 
   $("#bar-chart").dxChart({
     palette: "bright",
-    dataSource: states,
-    title: "Top 10 Most Populated States in US",
-    series: {
-      type: "bar",
+    dataSource: classifiedStates,
+    commonSeriesSettings: {
       argumentField: "name",
-      valueField: "population",
-      colorField: "region",
+      type: "stackedBar",
+    },
+    margin: {
+      top: 20,
+      bottom: 5,
+      left: 20,
+      right: 30
+  },
+    series: [
+      {
+        valueField: "populationYoung",
+        name: "Younge",
+      },
+      {
+        valueField: "populationElder",
+        name: "Old",
+      },
+    ],
+    legend: {
+      position: "inside",
+      verticalAlignment: "top",
+      horizontalAlignment: "right",
+      columnCount: 2,
+    },
+    title: {
+      text: "Top 10 Most Populated States in US",
+      font: {
+        size: 20,
+        weight: 600,
+      },
+      horizontalAlignment: "left",
+    },
+    tooltip: {
+      enabled: true,
+      font: {
+        color: "white",
+      },
+      customizeTooltip: function (arg) {
+        if (
+          selectedStateData &&
+          selectedStateData.name === arg.point.data.name
+        ) {
+          var youngPopulation =
+            (arg.point.data.populationYoung / 1000000).toFixed(1) + "M";
+          var elderPopulation =
+            (arg.point.data.populationElder / 1000000).toFixed(1) + "M";
+          return {
+            text:
+              arg.point.data.name +
+              "\nYoung: " +
+              youngPopulation +
+              "\nOld: " +
+              elderPopulation,
+            color: "#414140",
+          };
+        }
+        var area_km2 = arg.point.data.area.toLocaleString();
+        var area_m2 = Number(
+          (arg.point.data.area * (96713 / 250483)).toFixed(0)
+        ).toLocaleString();
+
+        return {
+          text: `Area: ${area_km2} km² (${area_m2} m²)`,
+          color: "#414140",
+        };
+      },
+    },
+    valueAxis: {
+      title: {
+        text: "Population",
+      },
+    },
+    argumentAxis: {
+      title: {
+        text: "State",
+      },
     },
   });
 });
