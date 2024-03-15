@@ -52,11 +52,11 @@ body {
   width: 300px;
   text-align: center !important;
   margin-top: -5px;
-  margin-left: -40px;
+  margin-left: -80px;
   font-size: 12px;
 }
 
-.dx-row.dx-header-row,
+#datagrid .dx-row.dx-header-row,
 .dx-row.dx-data-row {
   height: 30px;
   line-height: 30px;
